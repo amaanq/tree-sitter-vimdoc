@@ -133,7 +133,8 @@ module.exports = grammar({
       ),
       choice(
         token.immediate('<'),  // Treat codeblock-terminating "<" as whitespace.
-        $._blank),
+        $._blank,
+      ),
       repeat($._blank),
     ),
 
@@ -202,13 +203,14 @@ module.exports = grammar({
         /\n/,
       )),
 
-    h2: ($) =>
-      prec(1, seq(
-        alias(token.immediate(/------------+[\t ]*\n/), $.delimiter),
+    h2: ($) => prec.right(1, seq(
+      alias(token.immediate(/------------+[\t ]*\n/), $.delimiter),
+      optional(seq(
         alias(repeat1($._atom), $.heading),
         optional(seq($.tag, repeat($._atom))),
         /\n/,
       )),
+    )),
 
     // Heading 3: UPPERCASE NAME, followed by optional *tags*.
     h3: ($) =>
